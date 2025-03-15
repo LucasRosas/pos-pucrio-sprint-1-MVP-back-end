@@ -73,6 +73,23 @@ flask seed
 
 Agora, acesse [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API.
 
+## 📄 Documentação da API
+
+A API **Reserver** possui documentação interativa disponível no **Swagger**, **Redoc** e **RapiDoc**.
+
+- Acesse [http://localhost:5000/openapi/swagger](http://localhost:5000/openapi/swagger) para visualizar no **Swagger UI**.
+- Para escolher outro formato de documentação, acesse: [http://localhost:5000/openapi](http://localhost:5000/openapi).
+
+### 🔀 Rotas Disponíveis
+
+| Método  | Rota         | Descrição                                                                        |
+| ------- | ------------ | -------------------------------------------------------------------------------- |
+| `GET`   | `/`          | Redireciona para `/openapi`, onde é possível escolher o formato da documentação. |
+| `POST`  | `/login`     | Realiza a autenticação do usuário.                                               |
+| `GET`   | `/schedules` | Retorna todas as reservas do mês e ano informados.                               |
+| `POST`  | `/schedule`  | Adiciona uma nova reserva de quadra.                                             |
+| `PATCH` | `/schedule`  | Atualiza uma reserva existente.                                                  |
+
 ## 🔑 Usuários de Teste
 
 O sistema já vem com dois usuários cadastrados para fins de teste:
