@@ -1,54 +1,88 @@
-# Minha API
+# Reserver - BACK-END
 
-Este pequeno projeto é a parte back-end do meu MVP entregue na primeira Sprint do curso de pós-graduação em Engenharia de Software da Puc-Rio.
+> Back-end do MVP para a disciplina **Desenvolvimento Full Stack Básico** da Pós-Graduação em Engenharia de Software – PUC-Rio.
 
----
+## 📌 Proposta
 
-## Como executar
+O **Reserver** é um sistema de reservas de quadra de tênis que permite que alunos agendem horários de uso de forma simples e eficiente.
 
-Será necessário ter todas as libs python listadas no `requirements.txt` instaladas.
-Após clonar o repositório, é necessário ir ao diretório raiz, pelo terminal, para poder executar os comandos descritos abaixo.
+### 🎾 Funcionalidades principais
 
-> É fortemente indicado o uso de ambientes virtuais do tipo [virtualenv](https://virtualenv.pypa.io/en/latest/installation.html).
+- Visualização dos horários já reservados, evitando conflitos de agendamento.
+- Reserva de quadra por **1 hora**, com a opção de remarcar agendamentos futuros.
+- API para gerenciamento de reservas e autenticação de usuários.
 
-```
-$ python -m venv .venv
-(env)$ pip install -r requirements.txt
-```
+## 🚀 Instalação
 
-Este comando instala as dependências/bibliotecas, descritas no arquivo `requirements.txt`.
+### 1️⃣ Clonar o repositório
 
-Para executar a API basta executar:
+Certifique-se de que possui o `git` instalado e execute:
 
-```
-(env)$ flask run --host 0.0.0.0 --port 5000
-```
-
-Em modo de desenvolvimento é recomendado executar utilizando o parâmetro reload, que reiniciará o servidor
-automaticamente após uma mudança no código fonte.
-
-```
-(env)$ flask run --host 0.0.0.0 --port 5000 --reload
+```sh
+git clone https://github.com/LucasRosas/pos-pucrio-sprint-1-MVP-back-end.git
+cd pos-pucrio-sprint-1-MVP-back-end
 ```
 
-E entao rode os seeders
+### 2️⃣ Criar um ambiente virtual
 
-```
-$ flask seed
-```
+O uso de ambientes virtuais é altamente recomendado. Se ainda não possui o `virtualenv`, instale com:
 
-Abra o [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API em execução.
-
-## Usuários
-
-Dois usuários de teste estão criados no banco, os dados de acesso são:
-
-```
-user: luanasilva
-password: 654321
+```sh
+pip install virtualenv
 ```
 
+Depois, crie e ative um ambiente virtual:
+
+```sh
+python -m venv .venv
+# No Windows:
+.venv\Scripts\activate
+# No macOS/Linux:
+source .venv/bin/activate
 ```
-user: joseferreira
-passord:123456
+
+### 3️⃣ Instalar dependências
+
+Dentro do ambiente virtual, instale as bibliotecas necessárias:
+
+```sh
+pip install -r requirements.txt
+```
+
+### 4️⃣ Executar a API
+
+Inicie o servidor Flask com:
+
+```sh
+flask run --host 0.0.0.0 --port 5000
+```
+
+Para desenvolvimento, utilize o modo **reload** para recarregar automaticamente após alterações no código:
+
+```sh
+flask run --host 0.0.0.0 --port 5000 --reload
+```
+
+### 5️⃣ Rodar os seeders
+
+Após iniciar a API, execute o comando abaixo para popular o banco de dados com usuários de teste:
+
+```sh
+flask seed
+```
+
+Agora, acesse [http://localhost:5000/#/](http://localhost:5000/#/) no navegador para verificar o status da API.
+
+## 🔑 Usuários de Teste
+
+O sistema já vem com dois usuários cadastrados para fins de teste:
+
+```sh
+Usuário: luanasilva
+Senha: 654321
+```
+
+```sh
+Usuário: joseferreira
+Senha: 123456
 ```
