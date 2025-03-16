@@ -57,6 +57,12 @@ def home():
 def login(form: LoginSchema):
     """Faz o login do usuário
     Retorna uma representação do usuario.
+
+    Args:
+        form (LoginSchema): dicionário contendo email (string de login) e passowrd do usuário
+    
+    Returns:
+        dict: Retorna uma representação do usuário seguindo o schema definido em UserViewSchema.
     """
     user_email = form.email
     user_password = form.password
@@ -84,8 +90,11 @@ def login(form: LoginSchema):
 @app.get('/schedules', tags=[schedule_tag],
          responses={"200": ListagemSchedulesSchema, "404": ErrorSchema})
 def get_schedules(query: ScheduleBuscaSchema):
-    """Faz a busca por todos os Schedule cadastrados no mês e ano informados
-    Retorna uma representação da listagem de schedules.
+    """Faz a busca por todos os Schedule cadastrados no mês e ano informados. O token é utilizado para verificar se o usuário é o dono da reserva.
+    Args:
+        query (ScheduleBuscaSchema): dicionário contendo month (int) e year (int) e token (int) do usuário.
+    Returns:
+        dict: Representação da listagem de schedules.
     """
     month = f"{query.month:02d}"
     year = query.year
@@ -107,14 +116,17 @@ def get_schedules(query: ScheduleBuscaSchema):
    
     
     logger.debug(f"%d schedules econtrados" % len(schedules))
-    # retorna a representação de produto
+    # Retorna uma representação do schedule seguindo o schema definido em ScheduleViewSchema.
     return show_schedule(schedules, userId), 200
 
 @app.post('/schedule', tags=[schedule_tag],
           responses={"200": ScheduleViewSchema, "409": ErrorSchema, "400": ErrorSchema})
 def add_schedule(form: ScheduleSchema):
     """Adiciona um novo Schedule à base de dados
-    Retorna uma representação dos schedules.
+    Args: 
+        form (ScheduleSchema): dicionário contendo token (str), players (int) e datetime (str) da reserva.
+    Returns:
+        dict: Retorna uma representação do schedule seguindo o schema definido em ScheduleViewSchema.
     """
     user_id = form.token
     players = form.players
@@ -152,6 +164,10 @@ def add_schedule(form: ScheduleSchema):
 def update_schedule(form: ScheduleSchemaPatch):
     """Atualiza um Schedule à base de dados
     Retorna uma representação dos schedules.
+    Args:
+        form (ScheduleSchemaPatch): dicionário contendo token (str), id (str), players (int) e datetime (str) da reserva.
+    Returns:
+        dict: Retorna uma representação do schedule seguindo o schema definido em ScheduleViewSchema.
     """
     schedule_id = form.id
     players = form.players
@@ -180,92 +196,6 @@ def update_schedule(form: ScheduleSchemaPatch):
     session.commit()
     logger.debug(f"Atualizado schedule de data: '{date}'")
     return show_schedule([schedule], schedule.user), 200
-
-
-
-
-# @app.post('/produto', tags=[user_tag],
-#           responses={"200": ProdutoViewSchema, "409": ErrorSchema, "400": ErrorSchema})
-# def add_produto(form: ProdutoSchema):
-#     """Adiciona um novo Produto à base de dados
-
-#     Retorna uma representação dos produtos e comentários associados.
-#     """
-#     produto = Produto(
-#         nome=form.nome,
-#         quantidade=form.quantidade,
-#         valor=form.valor)
-#     logger.debug(f"Adicionando produto de nome: '{produto.nome}'")
-#     try:
-#         # criando conexão com a base
-#         session = Session()
-#         # adicionando produto
-#         session.add(produto)
-#         # efetivando o camando de adição de novo item na tabela
-#         session.commit()
-#         logger.debug(f"Adicionado produto de nome: '{produto.nome}'")
-#         return apresenta_produto(produto), 200
-
-#     except IntegrityError as e:
-#         # como a duplicidade do nome é a provável razão do IntegrityError
-#         error_msg = "Produto de mesmo nome já salvo na base :/"
-#         logger.warning(f"Erro ao adicionar produto '{produto.nome}', {error_msg}")
-#         return {"mesage": error_msg}, 409
-
-#     except Exception as e:
-#         # caso um erro fora do previsto
-#         error_msg = "Não foi possível salvar novo item :/"
-#         logger.warning(f"Erro ao adicionar produto '{produto.nome}', {error_msg}")
-#         return {"mesage": error_msg}, 400
-
-
-# @app.get('/produtos', tags=[produto_tag],
-#          responses={"200": ListagemProdutosSchema, "404": ErrorSchema})
-# def get_produtos():
-#     """Faz a busca por todos os Produto cadastrados
-
-#     Retorna uma representação da listagem de produtos.
-#     """
-#     logger.debug(f"Coletando produtos ")
-#     # criando conexão com a base
-#     session = Session()
-#     # fazendo a busca
-#     produtos = session.query(Produto).all()
-
-#     if not produtos:
-#         # se não há produtos cadastrados
-#         return {"produtos": []}, 200
-#     else:
-#         logger.debug(f"%d rodutos econtrados" % len(produtos))
-#         # retorna a representação de produto
-#         print(produtos)
-#         return apresenta_produtos(produtos), 200
-
-
-# @app.get('/produto', tags=[produto_tag],
-#          responses={"200": ProdutoViewSchema, "404": ErrorSchema})
-# def get_produto(query: ProdutoBuscaSchema):
-#     """Faz a busca por um Produto a partir do id do produto
-
-#     Retorna uma representação dos produtos e comentários associados.
-#     """
-#     produto_nome = query.nome
-#     logger.debug(f"Coletando dados sobre produto #{produto_nome}")
-#     # criando conexão com a base
-#     session = Session()
-#     # fazendo a busca
-#     produto = session.query(Produto).filter(Produto.nome == produto_nome).first()
-
-#     if not produto:
-#         # se o produto não foi encontrado
-#         error_msg = "Produto não encontrado na base :/"
-#         logger.warning(f"Erro ao buscar produto '{produto_nome}', {error_msg}")
-#         return {"mesage": error_msg}, 404
-#     else:
-#         logger.debug(f"Produto econtrado: '{produto.nome}'")
-#         # retorna a representação de produto
-#         return apresenta_produto(produto), 200
-
 
 # @app.delete('/produto', tags=[produto_tag],
 #             responses={"200": ProdutoDelSchema, "404": ErrorSchema})
