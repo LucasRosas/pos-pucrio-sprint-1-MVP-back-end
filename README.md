@@ -82,24 +82,25 @@ A API **Reserver** possui documentação interativa disponível no **Swagger**, 
 
 ### 🔀 Rotas Disponíveis
 
-| Método  | Rota         | Descrição                                                                        |
-| ------- | ------------ | -------------------------------------------------------------------------------- |
-| `GET`   | `/`          | Redireciona para `/openapi`, onde é possível escolher o formato da documentação. |
-| `POST`  | `/login`     | Realiza a autenticação do usuário.                                               |
-| `GET`   | `/schedules` | Retorna todas as reservas do mês e ano informados.                               |
-| `POST`  | `/schedule`  | Adiciona uma nova reserva de quadra.                                             |
-| `PATCH` | `/schedule`  | Atualiza uma reserva existente.                                                  |
+| Método   | Rota         | Descrição                                                                        |
+| -------- | ------------ | -------------------------------------------------------------------------------- |
+| `GET`    | `/`          | Redireciona para `/openapi`, onde é possível escolher o formato da documentação. |
+| `POST`   | `/login`     | Realiza a autenticação do usuário.                                               |
+| `GET`    | `/schedules` | Retorna todas as reservas do mês e ano informados.                               |
+| `POST`   | `/schedule`  | Adiciona uma nova reserva de quadra.                                             |
+| `PATCH`  | `/schedule`  | Atualiza uma reserva existente.                                                  |
+| `DELETE` | `/schedule`  | Remove uma reserva existente.                                                    |
 
 ## 🔑 Usuários de Teste
 
 O sistema já vem com dois usuários cadastrados para fins de teste:
 
 ```sh
-Usuário: luanasilva
+Usuário: joaofonseca
 Senha: 654321
 ```
 
 ```sh
-Usuário: joseferreira
+Usuário: biahaddad
 Senha: 123456
 ```

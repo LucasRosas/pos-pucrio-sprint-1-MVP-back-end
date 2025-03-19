@@ -26,7 +26,7 @@ class User(Base):
 
         Arguments:
             name: nome do usuário.
-            role: função do usuário (ex: admin, client)
+            role: função do usuário (ex: aluno, administrador)
             avatar: avatar do usuário
             email: email do usuário
             password: senha do usuário

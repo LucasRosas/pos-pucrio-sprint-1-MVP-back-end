@@ -18,8 +18,8 @@ CORS(app)
 
 # definindo tags
 home_tag = Tag(name="Documentação", description="Seleção de documentação: Swagger, Redoc ou RapiDoc")
-user_tag = Tag(name="Produto", description="Adição, visualização e remoção de produtos à base")
-schedule_tag = Tag(name="Comentario", description="Adição de um comentário à um produtos cadastrado na base")
+user_tag = Tag(name="Autenticação", description="Autenticação de usuário")
+schedule_tag = Tag(name="Reservas", description="Operações de agendamento")
 
 @app.cli.command("seed")
 def seed():
@@ -29,10 +29,10 @@ def seed():
     # adicionando usuários
 
     hashed_password = generate_password_hash("654321")
-    user1 = User(name="Luana Silva", role="student", avatar="https://plus.unsplash.com/premium_vector-1718403156971-7c57ef07337c?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", email="luanasilva", password=hashed_password)
+    user1 = User(name="João Fonseca", role="Aluno", avatar="https://conteudo.imguol.com.br/c/esporte/62/2025/03/03/joao-fonseca-na-primeira-rodada-do-rio-open-de-2025-1741050299448_v2_450x450.jpg.webp", email="joaofonseca", password=hashed_password)
 
     hashed_password = generate_password_hash("123456")
-    user2 = User(name="José Ferreira", role="student", avatar="https://plus.unsplash.com/premium_vector-1718403156893-03d290049a03?q=80&w=1480&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", email="joseferreira", password=hashed_password)
+    user2 = User(name="Beatriz Haddad", role="Aluna", avatar="https://photoresources.wtatennis.com/photo-resources/2024/04/29/440d7a25-7fee-431e-b9ce-2df1804daac3/HaddadMaia-Torso_318176-WTA-Tennis.png?width=950", email="biahaddad", password=hashed_password)
 
     session.add(user1)
     session.add(user2)
@@ -56,12 +56,12 @@ def home():
           responses={"200": UserViewSchema, "404": ErrorSchema, "401": ErrorSchema})
 def login(form: LoginSchema):
     """Faz o login do usuário
-    Retorna uma representação do usuario.
+    Retorna uma representação do usuário.
 
-    Args:
+    **Args:**
         form (LoginSchema): dicionário contendo email (string de login) e passowrd do usuário
     
-    Returns:
+    **Returns:**
         dict: Retorna uma representação do usuário seguindo o schema definido em UserViewSchema.
     """
     user_email = form.email
@@ -73,12 +73,13 @@ def login(form: LoginSchema):
     user = session.query(User).filter(User.email == user_email).first()
     
     if not user:
-        # se o produto não foi encontrado
-        error_msg = "Usuário não encontrado na base :/"
+        # se o usuário não foi encontrado
+        error_msg = "Credenciais inválidas :/"
         logger.warning(f"Erro ao buscar usuário '{user_email}', {error_msg}")
         return {"mesage": error_msg}, 404
     
     if not check_password_hash(user.password, user_password):
+        # se a senha não for a mesma
         error_msg = "E-mail ou senha inválidos :/"
         logger.warning(f"Erro ao buscar usuário '{user_email}', {error_msg}")
         return {"mesage": error_msg}, 401
@@ -88,13 +89,15 @@ def login(form: LoginSchema):
     return show_user(user), 200
 
 @app.get('/schedules', tags=[schedule_tag],
-         responses={"200": ListagemSchedulesSchema, "404": ErrorSchema})
-def get_schedules(query: ScheduleBuscaSchema):
-    """Faz a busca por todos os Schedule cadastrados no mês e ano informados. O token é utilizado para verificar se o usuário é o dono da reserva.
-    Args:
-        query (ScheduleBuscaSchema): dicionário contendo month (int) e year (int) e token (int) do usuário.
-    Returns:
-        dict: Representação da listagem de schedules.
+         responses={"200": ScheduleViewSchemaList, "404": ErrorSchema})
+def get_schedules(query: ScheduleSchemaSearch):
+    """Faz a busca por todas as reservas cadastradas no mês e ano informados. O token é utilizado para verificar se o usuário é o dono da reserva.
+    
+    **Args:**
+        query (ScheduleSchemaSearch): dicionário contendo month (int) e year (int) e token (int) do usuário.
+
+    **Returns:**
+        dict: Representação da listagem de reservas.
     """
     month = f"{query.month:02d}"
     year = query.year
@@ -121,19 +124,19 @@ def get_schedules(query: ScheduleBuscaSchema):
 
 @app.post('/schedule', tags=[schedule_tag],
           responses={"200": ScheduleViewSchema, "409": ErrorSchema, "400": ErrorSchema})
-def add_schedule(form: ScheduleSchema):
-    """Adiciona um novo Schedule à base de dados
-    Args: 
+def add_schedule(form: ScheduleSchemaPost):
+    """Adiciona uma nova reserva  na base de dados
+    
+    **Args:** 
         form (ScheduleSchema): dicionário contendo token (str), players (int) e datetime (str) da reserva.
-    Returns:
-        dict: Retorna uma representação do schedule seguindo o schema definido em ScheduleViewSchema.
+    
+    **Returns:**
+        dict: Retorna uma representação da reserva seguindo o schema definido em ScheduleViewSchema.
     """
     user_id = form.token
     players = form.players
     # form.datetime in ISOString 2025-03-11T00:14:00.000Z
     date = datetime.strptime(form.datetime, "%Y-%m-%dT%H:%M:%S.%fZ")
-
-
 
     logger.debug(f"Adicionando schedule de data: '{date}'")
     schedule = Schedule(user=user_id, players=players, datetime=date)
@@ -162,12 +165,14 @@ def add_schedule(form: ScheduleSchema):
 @app.patch('/schedule', tags=[schedule_tag],
           responses={"200": ScheduleViewSchema, "404": ErrorSchema, "400": ErrorSchema})
 def update_schedule(form: ScheduleSchemaPatch):
-    """Atualiza um Schedule à base de dados
-    Retorna uma representação dos schedules.
-    Args:
+    """Atualiza uma reserva na base de dados
+    Retorna uma representação das reservas.
+    
+    **Args:**
         form (ScheduleSchemaPatch): dicionário contendo token (str), id (str), players (int) e datetime (str) da reserva.
-    Returns:
-        dict: Retorna uma representação do schedule seguindo o schema definido em ScheduleViewSchema.
+    
+    **Returns:**
+        dict: Retorna uma representação da reserva seguindo o schema definido em ScheduleViewSchema.
     """
     schedule_id = form.id
     players = form.players
@@ -181,82 +186,60 @@ def update_schedule(form: ScheduleSchemaPatch):
     schedule = session.query(Schedule).filter(Schedule.id == schedule_id).first()
 
     if not schedule:
-        # se o produto não foi encontrado
+        # se a reserva não foi encontrada
         error_msg = "Schedule não encontrado na base :/"
         logger.warning(f"Erro ao buscar schedule '{schedule_id}', {error_msg}")
         return {"mesage": error_msg}, 404
     
     if not schedule.user == form.token:
+        # se o usuário não for o dono da reserva
         error_msg = "Usuário não autorizado para atualizar schedule :/"
         logger.warning(f"Erro ao atualizar schedule '{schedule_id}', {error_msg}")
         return {"mesage": error_msg}, 400
 
+    # caso contrário segue com a atualização
     schedule.players = players
     schedule.datetime = date
     session.commit()
     logger.debug(f"Atualizado schedule de data: '{date}'")
     return show_schedule([schedule], schedule.user), 200
 
-# @app.delete('/produto', tags=[produto_tag],
-#             responses={"200": ProdutoDelSchema, "404": ErrorSchema})
-# def del_produto(query: ProdutoBuscaSchema):
-#     """Deleta um Produto a partir do nome de produto informado
+@app.delete('/schedule', tags=[schedule_tag],
+             responses={"200": ScheduleViewSchemaDelete, "404": ErrorSchema})
+def del_schedule(query: ScheduleSchemaDelete):
+    """Deleta uma reserva da base de dados
+    Retorna uma mensagem de confirmação da remoção.
+    
+    **Args**:
+        query (ScheduleSchemaDelete): dicionário contendo token (str) e id (str) da reserva.
+    
+    **Returns:**
+        dict: Retorna uma mensagem de confirmação da remoção com o id da reserva deletada.
+    """
+    schedule_id = query.id
+    logger.debug(f"Deletando schedule de id: '{schedule_id}'")
+    # criando conexão com a base
+    session = Session()
+    # fazendo a busca da reserva pelo id
+    schedule = session.query(Schedule).filter(Schedule.id == schedule_id).first()
 
-#     Retorna uma mensagem de confirmação da remoção.
-#     """
-#     produto_nome = unquote(unquote(query.nome))
-#     print(produto_nome)
-#     logger.debug(f"Deletando dados sobre produto #{produto_nome}")
-#     # criando conexão com a base
-#     session = Session()
-#     # fazendo a remoção
-#     count = session.query(Produto).filter(Produto.nome == produto_nome).delete()
-#     session.commit()
+    if not schedule:
+        # se a reserva não foi encontrada
+        error_msg = "Reserva não encontrada na base :/"
+        logger.warning(f"Erro ao buscar reserva '{schedule_id}', {error_msg}")
+        return {"mesage": error_msg}, 404
+    
+    if not schedule.user == query.token:
+        # se o usuário não for o dono da reserva
+        error_msg = "Usuário não autorizado para deletar reserva :/"
+        logger.warning(f"Erro ao deletar schedule '{schedule_id}', {error_msg}")
+        return {"mesage": error_msg}, 400
 
-#     if count:
-#         # retorna a representação da mensagem de confirmação
-#         logger.debug(f"Deletado produto #{produto_nome}")
-#         return {"mesage": "Produto removido", "id": produto_nome}
-#     else:
-#         # se o produto não foi encontrado
-#         error_msg = "Produto não encontrado na base :/"
-#         logger.warning(f"Erro ao deletar produto #'{produto_nome}', {error_msg}")
-#         return {"mesage": error_msg}, 404
-
-
-# @app.post('/cometario', tags=[comentario_tag],
-#           responses={"200": ProdutoViewSchema, "404": ErrorSchema})
-# def add_comentario(form: ComentarioSchema):
-#     """Adiciona de um novo comentário à um produtos cadastrado na base identificado pelo id
-
-#     Retorna uma representação dos produtos e comentários associados.
-#     """
-#     produto_id  = form.produto_id
-#     logger.debug(f"Adicionando comentários ao produto #{produto_id}")
-#     # criando conexão com a base
-#     session = Session()
-#     # fazendo a busca pelo produto
-#     produto = session.query(Produto).filter(Produto.id == produto_id).first()
-
-#     if not produto:
-#         # se produto não encontrado
-#         error_msg = "Produto não encontrado na base :/"
-#         logger.warning(f"Erro ao adicionar comentário ao produto '{produto_id}', {error_msg}")
-#         return {"mesage": error_msg}, 404
-
-#     # criando o comentário
-#     texto = form.texto
-#     comentario = Comentario(texto)
-
-#     # adicionando o comentário ao produto
-#     produto.adiciona_comentario(comentario)
-#     session.commit()
-
-#     logger.debug(f"Adicionado comentário ao produto #{produto_id}")
-
-#     # retorna a representação de produto
-#     return apresenta_produto(produto), 200
-
+    # caso contrário segue com a exclusão
+    session.delete(schedule)
+    session.commit()
+    logger.debug(f"Deletado schedule de id: '{schedule_id}'")
+    return {"mesage": "Reserva deletada com sucesso!", "id": schedule_id}, 200
 
 if __name__ == "__main__":
     app.run()
