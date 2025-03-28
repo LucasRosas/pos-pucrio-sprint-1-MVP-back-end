@@ -100,6 +100,12 @@ def get_schedules(query: ScheduleSchemaSearch):
         dict: Representação da listagem de reservas.
     """
     month = f"{query.month:02d}"
+
+    if(int(month) < 1 or int(month) > 12):
+        error_msg = "Mês inválido :/"
+        logger.warning(f"Erro ao buscar schedule '{month}', {error_msg}")
+        return {"mesage": error_msg}, 404
+
     year = query.year
     userId = query.token
 
