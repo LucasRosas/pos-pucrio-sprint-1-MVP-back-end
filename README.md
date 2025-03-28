@@ -65,7 +65,7 @@ flask run --host 0.0.0.0 --port 5000 --reload
 
 ### 5️⃣ Rodar os seeders
 
-Após iniciar a API, execute o comando abaixo para popular o banco de dados com usuários de teste:
+Após iniciar a API, num outro terminal, execute o comando abaixo para popular o banco de dados com usuários de teste:
 
 ```sh
 flask seed
