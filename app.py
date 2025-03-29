@@ -94,7 +94,7 @@ def get_schedules(query: ScheduleSchemaSearch):
     """Faz a busca por todas as reservas cadastradas no mês e ano informados. O token é utilizado para verificar se o usuário é o dono da reserva.
     
     **Args:**
-        query (ScheduleSchemaSearch): dicionário contendo month (int) entre 1 e 12, inclusive, year (int) e token (int) do usuário.
+        query (ScheduleSchemaSearch): dicionário contendo month (int) entre 1 e 12, inclusive, year (int) e token (str) do usuário.
 
     **Returns:**
         dict: Representação da listagem de reservas.
@@ -248,4 +248,4 @@ def del_schedule(query: ScheduleSchemaDelete):
     return {"mesage": "Reserva deletada com sucesso!", "id": schedule_id}, 200
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
