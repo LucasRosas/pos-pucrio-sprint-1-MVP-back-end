@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class UserSchema(BaseModel):
     """ Define como um novo usuario a ser inserido deve ser representado
@@ -14,8 +14,8 @@ class UserSchema(BaseModel):
 class LoginSchema(BaseModel):
     """ Define como o login do usuário deve ser representado
     """
-    email: str
-    password: str
+    email: str = Field(example="joaofonseca")
+    password: str = Field(example="654321")
 
 class UserViewSchema(BaseModel):
     """ Define como um novo usuario a ser inserido deve ser representado

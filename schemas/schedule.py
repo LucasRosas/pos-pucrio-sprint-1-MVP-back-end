@@ -10,21 +10,21 @@ class ScheduleSchemaPost(BaseModel):
     """ Define como um novo schedule a ser inserido deve ser representado
     """
     token: str
-    players: int = Field(gt=0, description="Número de jogadores deve ser maior que 0" )
-    datetime: str
+    players: int = Field(gt=0, description="Número de jogadores deve ser maior que 0", example=1)
+    datetime: str = Field(example="2025-04-08T11:00:00.000Z")
 
 class ScheduleSchemaPatch(BaseModel):
     """ Define como um novo schedule a ser editado deve ser representado
     """
-    token: str
+    token: str  = Field(example="473b4033-ea29-4a3e-af99-80883d7a2f0e")
     id: str
-    players: int = Field(gt=0, description="Número de jogadores deve ser maior que 0" )
-    datetime: str
+    players: int = Field(gt=0, description="Número de jogadores deve ser maior que 0", example=2 )
+    datetime: str = Field(example="2025-04-08T13:00:00.000Z")
     
 class ScheduleSchemaDelete(BaseModel):
     """ Define como um novo schedule a ser deletado deve ser representado
     """   
-    token: str 
+    token: str = Field(example="473b4033-ea29-4a3e-af99-80883d7a2f0e")
     id: str
 
 
@@ -32,9 +32,9 @@ class ScheduleSchemaSearch(BaseModel):
     """ Define como deve ser a estrutura que representa a busca. Que será
         feita apenas com base na data da reserva.
     """
-    month: int
-    year: int
-    token: str
+    month: int = Field(gt=0, le=12, description="Mês deve ser maior que 0 e menor que 13", example=3)
+    year: int = Field(example=2025)
+    token: str = Field(example="473b4033-ea29-4a3e-af99-80883d7a2f0e")
 
 class ScheduleViewSchema(BaseModel):
     """ Define como um schedule será retornado.
