@@ -32,7 +32,7 @@ class ScheduleSchemaSearch(BaseModel):
     """ Define como deve ser a estrutura que representa a busca. Que será
         feita apenas com base na data da reserva.
     """
-    month: int = Field(gt=0, le=12, description="Mês deve ser maior que 0 e menor que 13", example=3)
+    month: int = Field(gt=0, le=12, description="Mês deve ser maior que 0 e menor que 13", example=4)
     year: int = Field(example=2025)
     token: str = Field(example="473b4033-ea29-4a3e-af99-80883d7a2f0e")
 
